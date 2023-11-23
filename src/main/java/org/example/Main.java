@@ -4,13 +4,31 @@ import org.example.data.PokemonProduct;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
+    public static void saveDataToCSV(List<PokemonProduct> pokemonProducts) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("scraped_data.csv"))) {
+            // Write the header
+            writer.println("URL,Image,Name,Price");
+
+            // Write the data for each product
+            for (PokemonProduct product : pokemonProducts) {
+                writer.println(product.getUrl() + "," + product.getImage() + "," + product.getName() + "," + product.getPrice());
+            }
+
+            System.out.println("Data saved to scraped_data.csv");
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving data to CSV", e);
+        }
+    }
+
     public static void scrapeProductPage(
             List<PokemonProduct> pokemonProducts,
             Set<String> pagesDiscovered,
@@ -122,6 +140,7 @@ public class Main {
 
         System.out.println(pokemonProducts.size());
 
-        // writing the scraped data to a db or export it to a file...
+        // Save the scraped data to a CSV file
+        saveDataToCSV(pokemonProducts);
     }
 }
